@@ -1,10 +1,12 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { useTimer } from '../../hooks/useTimer';
+import { useTimer, useSingletonTimerTick } from '../../hooks/useTimer';
 
 const AppLayout: React.FC = () => {
   const { isOffline } = useTimer();
+  useSingletonTimerTick(); // ← exactly ONE tick interval for the whole app
+
   return (
     <div className="app-shell">
       <Sidebar />

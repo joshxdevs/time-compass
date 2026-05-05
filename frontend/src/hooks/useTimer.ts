@@ -3,9 +3,28 @@ import { useTimerStore } from '../store/timerStore';
 import { getTimerStatus, startTimer, stopTimer, switchTimer } from '../api/timer';
 import { TimeSession } from '../types';
 
-
 const HEARTBEAT_INTERVAL = 15000; // 15 seconds
 const MAX_HEARTBEAT_FAILURES = 3;
+
+// ── Module-level singleton tick ────────────────────────────────────────────
+// This ensures only ONE interval ever runs, regardless of how many components
+// call useTimer(). Previously, 4 components each started their own interval.
+let _tickInterval: number | null = null;
+
+function startSingletonTick() {
+  if (_tickInterval !== null) return; // already running
+  _tickInterval = window.setInterval(() => {
+    useTimerStore.getState().incrementElapsed();
+  }, 1000);
+}
+
+function stopSingletonTick() {
+  if (_tickInterval !== null) {
+    clearInterval(_tickInterval);
+    _tickInterval = null;
+  }
+}
+
 
 export const useTimer = () => {
   const {
@@ -64,29 +83,12 @@ export const useTimer = () => {
     broadcastRef.current?.postMessage({ type: 'timer:change' });
   };
 
-  // ── Tick (client-side increment, server-authoritative) ────────────────────
-  // Use a ref for the callback to avoid re-creating the interval on every tick.
-  const incrementRef = useRef(incrementElapsed);
-  useEffect(() => { incrementRef.current = incrementElapsed; });
 
-  useEffect(() => {
-    if (status === 'running') {
-      tickRef.current = window.setInterval(() => {
-        incrementRef.current();
-      }, 1000);
-    } else {
-      if (tickRef.current) {
-        clearInterval(tickRef.current);
-        tickRef.current = null;
-      }
-    }
-    return () => {
-      if (tickRef.current) {
-        clearInterval(tickRef.current);
-        tickRef.current = null;
-      }
-    };
-  }, [status]); // ← status only! No incrementElapsed here.
+  // ── Tick: managed by singleton (useSingletonTimerTick in AppLayout) ────────
+  // Do NOT add a setInterval here. useTimer is called by 4+ components,
+  // each would create its own interval causing the timer to jump N seconds/tick.
+
+
 
   // ── Heartbeat ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -218,6 +220,20 @@ export const useTimer = () => {
     switchActivity,
   };
 };
+
+// ── Singleton tick hook: call this ONCE at the app root (AppLayout) ────────
+export const useSingletonTimerTick = () => {
+  const status = useTimerStore((s) => s.status);
+  useEffect(() => {
+    if (status === 'running') {
+      startSingletonTick();
+    } else {
+      stopSingletonTick();
+    }
+    return () => stopSingletonTick();
+  }, [status]);
+};
+
 
 export const formatTime = (seconds: number): string => {
   const h = Math.floor(seconds / 3600);
