@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, List, BarChart2, LogOut, Compass } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -9,6 +9,17 @@ const Sidebar: React.FC = () => {
   const { user, logout } = useAuth();
   const { isRunning, elapsedSeconds } = useTimer();
   const navigate = useNavigate();
+
+  // Live clock
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+
 
   const handleLogout = async () => {
     await logout();
@@ -47,6 +58,35 @@ const Sidebar: React.FC = () => {
           Analytics
         </NavLink>
       </nav>
+
+      {/* Live clock */}
+      <div style={{
+        margin: '8px 12px',
+        padding: '10px 12px',
+        borderRadius: 10,
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        textAlign: 'center',
+      }}>
+        <div style={{
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: 18,
+          fontWeight: 500,
+          color: 'var(--text-primary)',
+          letterSpacing: 1,
+          lineHeight: 1.2,
+        }}>
+          {timeStr}
+        </div>
+        <div style={{
+          fontSize: 11,
+          color: 'var(--text-muted)',
+          marginTop: 3,
+          letterSpacing: 0.3,
+        }}>
+          {dateStr}
+        </div>
+      </div>
 
       <div className="sidebar-bottom">
         <div className="sidebar-user">
