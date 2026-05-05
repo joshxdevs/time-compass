@@ -3,6 +3,7 @@ import { useTimerStore } from '../store/timerStore';
 import { getTimerStatus, startTimer, stopTimer, switchTimer } from '../api/timer';
 import { TimeSession } from '../types';
 
+
 const HEARTBEAT_INTERVAL = 15000; // 15 seconds
 const MAX_HEARTBEAT_FAILURES = 3;
 
@@ -64,10 +65,14 @@ export const useTimer = () => {
   };
 
   // ── Tick (client-side increment, server-authoritative) ────────────────────
+  // Use a ref for the callback to avoid re-creating the interval on every tick.
+  const incrementRef = useRef(incrementElapsed);
+  useEffect(() => { incrementRef.current = incrementElapsed; });
+
   useEffect(() => {
     if (status === 'running') {
       tickRef.current = window.setInterval(() => {
-        incrementElapsed();
+        incrementRef.current();
       }, 1000);
     } else {
       if (tickRef.current) {
@@ -76,9 +81,12 @@ export const useTimer = () => {
       }
     }
     return () => {
-      if (tickRef.current) clearInterval(tickRef.current);
+      if (tickRef.current) {
+        clearInterval(tickRef.current);
+        tickRef.current = null;
+      }
     };
-  }, [status, incrementElapsed]);
+  }, [status]); // ← status only! No incrementElapsed here.
 
   // ── Heartbeat ─────────────────────────────────────────────────────────────
   useEffect(() => {
