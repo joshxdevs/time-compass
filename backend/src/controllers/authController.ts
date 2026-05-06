@@ -118,20 +118,9 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
       return next(createError('Refresh token expired or invalid', 401));
     }
 
-    // Rotate refresh token
-    await prisma.refreshToken.delete({ where: { id: storedToken.id } });
-
     const newAccessToken = signAccessToken(payload);
-    const newRefreshToken = signRefreshToken(payload);
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await prisma.refreshToken.create({
-      data: { userId: payload.userId, token: newRefreshToken, expiresAt },
-    });
-
-    res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+    res.json({ accessToken: newAccessToken, refreshToken: storedToken.token });
   } catch (err) {
     next(err);
   }
