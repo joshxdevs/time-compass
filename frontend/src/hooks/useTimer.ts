@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useTimerStore } from '../store/timerStore';
-import { getTimerStatus, startTimer, stopTimer, switchTimer } from '../api/timer';
+import { getTimerStatus, startTimer, stopTimer, switchTimer, sendHeartbeat } from '../api/timer';
 import { TimeSession } from '../types';
 
 const HEARTBEAT_INTERVAL = 15000; // 15 seconds
@@ -95,6 +95,9 @@ export const useTimer = () => {
     if (status === 'running') {
       heartbeatRef.current = window.setInterval(async () => {
         try {
+          // Tell the server we are still active so it doesn't auto-stop
+          await sendHeartbeat();
+          
           // Re-sync elapsed from server on each heartbeat
           const data = await getTimerStatus();
           if (data.isRunning && data.session) {
