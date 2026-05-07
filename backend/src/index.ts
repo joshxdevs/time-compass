@@ -41,7 +41,7 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`\n🧭 TimeCompass backend running on http://localhost:${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-  startHeartbeatCron();
+  // Heartbeat cron removed so timers run continuously until explicitly stopped
 });
 
 export default app;
