@@ -118,7 +118,8 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
       return next(createError('Refresh token expired or invalid', 401));
     }
 
-    const newAccessToken = signAccessToken(payload);
+    const newPayload = { userId: payload.userId, email: payload.email };
+    const newAccessToken = signAccessToken(newPayload);
 
     res.json({ accessToken: newAccessToken, refreshToken: storedToken.token });
   } catch (err) {
