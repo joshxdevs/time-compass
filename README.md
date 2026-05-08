@@ -1,4 +1,4 @@
-# 🧭 TimeCompass
+# TimeCompass
 
 ![TimeCompass Dashboard](https://img.shields.io/badge/Status-Live-success)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
@@ -8,11 +8,11 @@
 
 **TimeCompass** is a premium, minimalist time-tracking and productivity dashboard. Designed for individuals who want precision tracking of their daily activities without the clutter of traditional time trackers.
 
-🚀 **Live Demo:** [https://timecompass.joshuapaul.site/](https://timecompass.joshuapaul.site/)
+**Live Demo:** [https://timecompass.joshuapaul.site/](https://timecompass.joshuapaul.site/)
 
 ---
 
-## ✨ Features
+## Features
 
 * **Precision Time Tracking:** Server-authoritative timer ensuring you never lose a second, even if your tab closes or your phone locks.
 * **Activity Management:** Categorize your time into customizable activities (e.g., Gym, Deep Work, Sleep).
@@ -20,7 +20,7 @@
 * **Premium Minimalist UI:** Glassmorphic elements, smooth micro-animations, and a responsive layout designed for focus.
 * **Robust Authentication:** Secure JWT-based authentication with refresh token rotation and multi-tab race condition handling.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend (Cloudflare Pages)
 * **Framework:** React 18 with Vite
@@ -39,7 +39,7 @@
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 To run this project locally, follow these steps:
 
@@ -100,7 +100,7 @@ Navigate to `http://localhost:5175` in your browser.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 time-compass/
@@ -124,4 +124,4 @@ time-compass/
 ```
 
 ---
-*Built with ❤️ by Joshxdevs.*
+*Built by Joshxdevs.*
